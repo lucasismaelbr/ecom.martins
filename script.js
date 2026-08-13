@@ -113,4 +113,68 @@
   window.addEventListener('scroll', updateActiveLink, { passive: true });
   updateActiveLink();
 
+  /* ── Contact form async submit ────────────────────────────────────────── */
+  const contactForm   = document.getElementById('contact-form');
+  const submitBtn     = document.getElementById('form-submit-btn');
+  const formFeedback  = document.getElementById('form-feedback');
+
+  if (contactForm && submitBtn && formFeedback) {
+    contactForm.addEventListener('submit', async function (e) {
+      e.preventDefault();
+
+      // Basic HTML5 validation
+      if (!contactForm.checkValidity()) {
+        contactForm.reportValidity();
+        return;
+      }
+
+      // Loading state
+      const originalLabel = submitBtn.innerHTML;
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true" style="animation:spin .8s linear infinite">
+          <circle cx="12" cy="12" r="10" stroke-opacity=".25"/><path d="M12 2a10 10 0 0 1 10 10" />
+        </svg>
+        Enviando…`;
+      formFeedback.textContent = '';
+      formFeedback.className = 'form-feedback';
+
+      try {
+        const data = new FormData(contactForm);
+        // Tell FormSubmit to respond in JSON so we can stay on page
+        data.append('_next', 'false');
+
+        const res = await fetch(contactForm.action, {
+          method: 'POST',
+          body: data,
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (res.ok || res.status === 200) {
+          formFeedback.textContent = '✅ Mensagem enviada! Entraremos em contato em breve.';
+          formFeedback.className = 'form-feedback success';
+          contactForm.reset();
+        } else {
+          throw new Error('Servidor retornou erro ' + res.status);
+        }
+      } catch (err) {
+        formFeedback.textContent = '❌ Erro ao enviar. Tente pelo WhatsApp ou tente novamente.';
+        formFeedback.className = 'form-feedback error';
+        console.error('[ContactForm]', err);
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalLabel;
+      }
+    });
+  }
+
+  /* ── Spin keyframe (for loading icon) ───────────────────────────────────*/
+  if (!document.getElementById('spin-keyframes')) {
+    const style = document.createElement('style');
+    style.id = 'spin-keyframes';
+    style.textContent = '@keyframes spin { to { transform: rotate(360deg); } }';
+    document.head.appendChild(style);
+  }
+
 })();
+
