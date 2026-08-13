@@ -67,8 +67,19 @@
   window.addEventListener('scroll', handleNavScroll, { passive: true });
   handleNavScroll();
 
-  /* ── Scroll fade-up animations (Intersection Observer) ───────────────── */
-  const fadeEls = document.querySelectorAll('.fade-up');
+  /* ── Scroll fade-up + reveal animations (Intersection Observer) ────────── */
+  const REVEAL_SELECTOR = [
+    '.fade-up',
+    '.reveal-left',
+    '.reveal-right',
+    '.reveal-up',
+    '.reveal-zoom',
+    '.reveal-flip',
+    '.reveal-fade',
+    '.reveal-bounce',
+  ].join(', ');
+
+  const fadeEls = document.querySelectorAll(REVEAL_SELECTOR);
 
   if ('IntersectionObserver' in window && fadeEls.length) {
     const observer = new IntersectionObserver(
@@ -167,6 +178,66 @@
       }
     });
   }
+
+  /* ── Encrypt / Scramble button effect ───────────────────────────────── */
+  const SCRAMBLE_CHARS = '!@#$%^&*(){}|<>/?ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const CYCLES_PER_LETTER = 3;
+  const SHUFFLE_MS = 30;
+
+  function initEncryptBtn(btn) {
+    const target     = btn.dataset.scramble || '';
+    const textEl     = btn.querySelector('.btn-text');
+    if (!textEl || !target) return;
+
+    const originalText = textEl.textContent;
+    let intervalId     = null;
+
+    function scramble() {
+      let pos = 0;
+      clearInterval(intervalId);
+      intervalId = setInterval(() => {
+        const result = target.split('').map((char, idx) => {
+          if (char === ' ') return ' ';
+          if (pos / CYCLES_PER_LETTER > idx) return char;
+          return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+        }).join('');
+        textEl.textContent = result;
+        pos++;
+        if (pos >= target.length * CYCLES_PER_LETTER) stopScramble(true);
+      }, SHUFFLE_MS);
+    }
+
+    function stopScramble(keepTarget) {
+      clearInterval(intervalId);
+      textEl.textContent = keepTarget ? target : originalText;
+    }
+
+    function restore() {
+      clearInterval(intervalId);
+      // Animate back to original label
+      let pos = target.length * CYCLES_PER_LETTER;
+      intervalId = setInterval(() => {
+        const result = originalText.split('').map((char, idx) => {
+          if (char === ' ') return ' ';
+          const revIdx = originalText.length - 1 - idx;
+          if (pos / CYCLES_PER_LETTER < revIdx) {
+            return SCRAMBLE_CHARS[Math.floor(Math.random() * SCRAMBLE_CHARS.length)];
+          }
+          return char;
+        }).join('');
+        textEl.textContent = result;
+        pos--;
+        if (pos <= 0) { clearInterval(intervalId); textEl.textContent = originalText; }
+      }, SHUFFLE_MS);
+    }
+
+    btn.addEventListener('mouseenter', scramble);
+    btn.addEventListener('mouseleave', restore);
+    btn.addEventListener('focus',      scramble);
+    btn.addEventListener('blur',       restore);
+  }
+
+  document.querySelectorAll('.btn-encrypt').forEach(initEncryptBtn);
 
   /* ── Spin keyframe (for loading icon) ───────────────────────────────────*/
   if (!document.getElementById('spin-keyframes')) {

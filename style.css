@@ -415,6 +415,170 @@ img { display: block; max-width: 100%; }
 .project-card:hover .project-arrow { color: var(--accent); }
 
 /* ══════════════════════════════════════════════════════════════════════════
+   CASE STUDY SHOWCASE
+   ══════════════════════════════════════════════════════════════════════════ */
+.projects-showcase { padding-bottom: 0; }
+
+.case-study {
+  display: grid;
+  grid-template-columns: 55% 45%;
+  min-height: 540px;
+  border-top: 1px solid var(--border);
+  overflow: hidden;
+}
+.case-study--reverse { grid-template-columns: 45% 55%; }
+.case-study--reverse .case-img-col  { order: 2; }
+.case-study--reverse .case-content-col { order: 1; }
+
+/* Image column */
+.case-img-col {
+  position: relative;
+  overflow: hidden;
+  background: rgba(14,18,32,.9);
+}
+.case-img-wrap {
+  width: 100%; height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.case-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition: transform .7s cubic-bezier(.25,.46,.45,.94);
+  display: block;
+}
+.case-study:hover .case-img { transform: scale(1.04); }
+
+.case-img-glow {
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg,
+    rgba(79,209,197,.08) 0%,
+    transparent 50%,
+    rgba(7,11,20,.6) 100%);
+  pointer-events: none;
+}
+
+/* Content column */
+.case-content-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.25rem;
+  padding: 3.5rem 3rem 3.5rem 3.5rem;
+  position: relative;
+}
+.case-study--reverse .case-content-col {
+  padding: 3.5rem 3.5rem 3.5rem 3rem;
+}
+
+/* Project number */
+.case-number {
+  position: absolute;
+  top: 2rem; right: 2.5rem;
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 1;
+  color: rgba(79,209,197,.06);
+  letter-spacing: -.04em;
+  pointer-events: none;
+  user-select: none;
+}
+.case-study--reverse .case-number { left: 2.5rem; right: auto; }
+
+/* Tags */
+.case-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.case-tag {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px solid rgba(79,209,197,.35);
+  background: rgba(79,209,197,.07);
+  padding: .25rem .75rem;
+  border-radius: var(--radius-full);
+}
+
+/* Title */
+.case-title {
+  font-size: 2rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -.02em;
+}
+
+/* Description */
+.case-desc {
+  font-size: .95rem;
+  color: var(--muted);
+  line-height: 1.75;
+}
+
+/* Results list */
+.case-results {
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  margin: 0;
+  padding: 0;
+}
+.case-results li {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  font-size: .875rem;
+  color: var(--muted);
+}
+.case-results li svg {
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
+/* CTA button */
+.case-btn { align-self: flex-start; margin-top: .5rem; }
+
+/* Offline badge */
+.case-offline-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: .78rem;
+  color: var(--muted);
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  padding: .4rem .9rem;
+  border-radius: var(--radius-full);
+  align-self: flex-start;
+  margin-top: .25rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .case-study,
+  .case-study--reverse {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .case-study--reverse .case-img-col  { order: 0; }
+  .case-study--reverse .case-content-col { order: 0; }
+  .case-img-col { aspect-ratio: 16/9; }
+  .case-img-wrap { height: 100%; }
+  .case-content-col,
+  .case-study--reverse .case-content-col {
+    padding: 2rem 1.5rem;
+  }
+  .case-title { font-size: 1.5rem; }
+  .case-number { font-size: 3.5rem; top: 1.25rem; right: 1.25rem; }
+  .case-study--reverse .case-number { left: 1.25rem; right: auto; }
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
    EXPERTISE
    ══════════════════════════════════════════════════════════════════════════ */
 .expertise-grid {
@@ -693,6 +857,110 @@ img { display: block; max-width: 100%; }
   .form-row { grid-template-columns: 1fr; }
 }
 
+/* ══════════════════════════════════════════════════════════════════════════
+   ENCRYPT BUTTON EFFECTS
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* All encrypt buttons are position:relative for pseudo-elements */
+.btn-encrypt {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  font-family: 'JetBrains Mono', 'Consolas', 'Courier New', monospace;
+  letter-spacing: .06em;
+}
+
+/* Scanning line that sweeps top → bottom on hover */
+.btn-scan {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.btn-scan::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: -100%;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(79,209,197,.9), transparent);
+  opacity: 0;
+  transition: opacity .2s;
+}
+.btn-encrypt:hover .btn-scan::after,
+.btn-encrypt:focus-visible .btn-scan::after {
+  opacity: 1;
+  animation: scan-sweep .9s ease-in-out infinite;
+}
+@keyframes scan-sweep {
+  0%   { top: -4px; opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { top: calc(100% + 4px); opacity: 0; }
+}
+
+/* Animated gradient border glow */
+.btn-encrypt::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(120deg, #2C7A7B, #4FD1C5, #81E6D9, #319795);
+  background-size: 300% 300%;
+  opacity: 0;
+  z-index: -1;
+  transition: opacity .35s;
+  animation: gradient-rotate 3s linear infinite paused;
+}
+.btn-encrypt:hover::before,
+.btn-encrypt:focus-visible::before {
+  opacity: 1;
+  animation-play-state: running;
+}
+@keyframes gradient-rotate {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Outer glow pulse on hover */
+.btn-encrypt::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: inherit;
+  background: radial-gradient(circle, rgba(79,209,197,.22) 0%, transparent 70%);
+  opacity: 0;
+  z-index: -2;
+  transition: opacity .35s;
+  pointer-events: none;
+}
+.btn-encrypt:hover::after,
+.btn-encrypt:focus-visible::after {
+  opacity: 1;
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+@keyframes pulse-glow {
+  0%, 100% { transform: scale(1);   opacity: .5; }
+  50%       { transform: scale(1.06); opacity: 1;  }
+}
+
+/* Scramble text — white on hover for maximum contrast on all button backgrounds */
+.btn-encrypt:hover .btn-text,
+.btn-encrypt:focus-visible .btn-text {
+  color: #FFFFFF;
+  -webkit-text-fill-color: #FFFFFF;
+  text-shadow: 0 0 12px rgba(129, 230, 217, 0.8), 0 0 24px rgba(79, 209, 197, 0.4);
+}
+
+/* Scale micro-interaction */
+.btn-encrypt { transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .25s; }
+.btn-encrypt:hover  { transform: scale(1.04); }
+.btn-encrypt:active { transform: scale(.97); }
+
+
+
 
 
 /* ══════════════════════════════════════════════════════════════════════════
@@ -704,6 +972,67 @@ img { display: block; max-width: 100%; }
   transition: opacity .7s ease calc(var(--delay, 0s)), transform .7s ease calc(var(--delay, 0s));
 }
 .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SCROLL REVEAL — Extended System
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Shared base: all reveal elements start hidden */
+.reveal-left,
+.reveal-right,
+.reveal-up,
+.reveal-zoom,
+.reveal-flip,
+.reveal-fade,
+.reveal-bounce {
+  opacity: 0;
+  transition:
+    opacity  .7s cubic-bezier(.16,1,.3,1) calc(var(--delay, 0s)),
+    transform .7s cubic-bezier(.16,1,.3,1) calc(var(--delay, 0s));
+  will-change: opacity, transform;
+}
+
+/* ── Initial states ─────────────────────────────────────────────────────── */
+.reveal-left  { transform: translateX(-52px); }
+.reveal-right { transform: translateX( 52px); }
+.reveal-up    { transform: translateY( 36px); }
+.reveal-zoom  { transform: scale(.85); }
+.reveal-fade  { /* opacity only */ }
+.reveal-flip  {
+  transform: perspective(600px) rotateX(-18deg) translateY(28px);
+  transform-origin: top center;
+}
+.reveal-bounce {
+  transform: translateY(30px) scale(.96);
+  transition:
+    opacity  .6s cubic-bezier(.34,1.56,.64,1) calc(var(--delay, 0s)),
+    transform .6s cubic-bezier(.34,1.56,.64,1) calc(var(--delay, 0s));
+}
+
+/* ── Visible states (added by JS) ───────────────────────────────────────── */
+.reveal-left.visible,
+.reveal-right.visible,
+.reveal-up.visible,
+.reveal-zoom.visible,
+.reveal-flip.visible,
+.reveal-fade.visible,
+.reveal-bounce.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Disable parallax on reduced-motion devices */
+@media (prefers-reduced-motion: reduce) {
+  .reveal-left, .reveal-right, .reveal-up,
+  .reveal-zoom, .reveal-flip, .reveal-fade, .reveal-bounce,
+  .fade-up {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+
 
 /* ══════════════════════════════════════════════════════════════════════════
    RESPONSIVE
