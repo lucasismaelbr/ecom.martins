@@ -954,10 +954,57 @@ img { display: block; max-width: 100%; }
   text-shadow: 0 0 12px rgba(129, 230, 217, 0.8), 0 0 24px rgba(79, 209, 197, 0.4);
 }
 
-/* Scale micro-interaction */
+/* Scale micro-interaction — desktop */
 .btn-encrypt { transition: transform .2s cubic-bezier(.34,1.56,.64,1), box-shadow .25s; }
 .btn-encrypt:hover  { transform: scale(1.04); }
 .btn-encrypt:active { transform: scale(.97); }
+
+/* ── Touch / Mobile overrides ─────────────────────────────────────────────
+   On touch devices there is no hover. We rely on :active and the
+   .btn-encrypt--touching class added by JS on touchstart.
+   ─────────────────────────────────────────────────────────────────────── */
+@media (hover: none) and (pointer: coarse) {
+
+  /* No scale-up on hover (there is none), only spring-back on tap */
+  .btn-encrypt:hover { transform: none; }
+  .btn-encrypt:active { transform: scale(.94); }
+
+  /* Gradient border — show on tap via JS class */
+  .btn-encrypt--touching::before {
+    opacity: 1 !important;
+    animation-play-state: running !important;
+  }
+
+  /* Outer glow — flash on tap */
+  .btn-encrypt--touching::after {
+    opacity: 1 !important;
+    animation: touch-glow-flash .5s ease-out forwards;
+  }
+  @keyframes touch-glow-flash {
+    0%   { opacity: 1;  transform: scale(1); }
+    60%  { opacity: .7; transform: scale(1.04); }
+    100% { opacity: 0;  transform: scale(1); }
+  }
+
+  /* Scan line — run once on tap */
+  .btn-encrypt--touching .btn-scan::after {
+    opacity: 1 !important;
+    animation: scan-sweep .55s ease-in-out 1 forwards !important;
+  }
+
+  /* Text — white glow on tap */
+  .btn-encrypt--touching .btn-text {
+    color: #FFFFFF !important;
+    -webkit-text-fill-color: #FFFFFF !important;
+    text-shadow: 0 0 12px rgba(129,230,217,.9), 0 0 24px rgba(79,209,197,.5);
+    transition: color .1s, text-shadow .1s;
+  }
+
+  /* Ripple effect on tap */
+  .btn-encrypt::before {
+    transition: opacity .2s;
+  }
+}
 
 
 

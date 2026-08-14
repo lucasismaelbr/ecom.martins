@@ -184,15 +184,19 @@
   const CYCLES_PER_LETTER = 3;
   const SHUFFLE_MS = 30;
 
+  // Detect touch-primary devices once
+  const isTouchDevice = window.matchMedia('(hover: none) and (pointer: coarse)').matches;
+
   function initEncryptBtn(btn) {
-    const target     = btn.dataset.scramble || '';
-    const textEl     = btn.querySelector('.btn-text');
+    const target   = btn.dataset.scramble || '';
+    const textEl   = btn.querySelector('.btn-text');
     if (!textEl || !target) return;
 
-    const originalText = textEl.textContent;
+    const originalText = textEl.textContent.trim();
     let intervalId     = null;
 
-    function scramble() {
+    /* ── Scramble forward (reveals target text) ── */
+    function scrambleForward(onComplete) {
       let pos = 0;
       clearInterval(intervalId);
       intervalId = setInterval(() => {
@@ -203,18 +207,17 @@
         }).join('');
         textEl.textContent = result;
         pos++;
-        if (pos >= target.length * CYCLES_PER_LETTER) stopScramble(true);
+        if (pos >= target.length * CYCLES_PER_LETTER) {
+          clearInterval(intervalId);
+          textEl.textContent = target;
+          if (onComplete) onComplete();
+        }
       }, SHUFFLE_MS);
     }
 
-    function stopScramble(keepTarget) {
+    /* ── Scramble back (restores original text) ── */
+    function scrambleBack() {
       clearInterval(intervalId);
-      textEl.textContent = keepTarget ? target : originalText;
-    }
-
-    function restore() {
-      clearInterval(intervalId);
-      // Animate back to original label
       let pos = target.length * CYCLES_PER_LETTER;
       intervalId = setInterval(() => {
         const result = originalText.split('').map((char, idx) => {
@@ -231,10 +234,27 @@
       }, SHUFFLE_MS);
     }
 
-    btn.addEventListener('mouseenter', scramble);
-    btn.addEventListener('mouseleave', restore);
-    btn.addEventListener('focus',      scramble);
-    btn.addEventListener('blur',       restore);
+    if (isTouchDevice) {
+      /* ── Touch mode: tap triggers scramble once, auto-restores ── */
+      btn.addEventListener('touchstart', () => {
+        btn.classList.add('btn-encrypt--touching');
+        scrambleForward(() => {
+          // After scramble completes, wait briefly then restore
+          setTimeout(() => {
+            scrambleBack();
+            // Remove CSS class after visual effects finish
+            setTimeout(() => btn.classList.remove('btn-encrypt--touching'), 600);
+          }, 350);
+        });
+      }, { passive: true });
+
+    } else {
+      /* ── Desktop/mouse mode: hover triggers scramble ── */
+      btn.addEventListener('mouseenter', () => scrambleForward(null));
+      btn.addEventListener('mouseleave', scrambleBack);
+      btn.addEventListener('focus',      () => scrambleForward(null));
+      btn.addEventListener('blur',       scrambleBack);
+    }
   }
 
   document.querySelectorAll('.btn-encrypt').forEach(initEncryptBtn);
